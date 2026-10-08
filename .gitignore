@@ -1,0 +1,29 @@
+# Altium Designer History and Backups
+History/
+*.Zip
+*.bak
+*.~*
+
+# Project Workspace and User Settings
+*.Workspace
+*.DsnWrk.Workspace
+*.PrjPcbStructure
+*.PrjPcbCache
+
+# File locks
+*.~(lock)*
+*.~lock*
+~$*
+
+# Compilation and Preview Outputs
+__Previews/
+Project Logs for */
+Project Outputs for */
+
+# Log files and caches
+*.log
+*.Txt
+*.DRR
+*.LDP
+*.APR_LIB
+*.RUL
