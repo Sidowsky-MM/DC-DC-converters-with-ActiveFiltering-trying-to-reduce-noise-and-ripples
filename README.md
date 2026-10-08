@@ -1,13 +1,20 @@
 # DC-DC Converters with Active Filtering (Noise & Ripple Suppression)
 
-<img width="75%" alt="Main DC-DC 3D Render" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/3D_mainDCDC.JPG" />
+<p align="center">
+  <img width="49%" alt="Boost 3D Board" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/PCB_MAIN/BOOST/boost3D.png" />
+  <img width="49%" alt="Buck 3D Board" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/PCB_MAIN/BUCK/buck3D.png" />
+</p>
+<p align="center">
+  <img width="49%" alt="SEPIC 3D Board" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/PCB_MAIN/SEPIC/Sepic3dpers.png" />
+  <img width="49%" alt="ZETA 3D Board" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/PCB_MAIN/ZETA/Zeta3dpersp.png" />
+</p>
 
 ## Project Overview
 
-Goal: Analyze, implement, and verify dedicated active and passive filtering topologies (ARF, AEF, Pi, CM/DM) across multiple DC-DC converter topologies (Synchronous SEPIC, Synchronous ZETA, and Asynchronous Boost) to minimize output voltage ripple (Vp-p) and switching noise while characterizing efficiency penalties and loop stability trade-offs.
+Goal: Analyze, implement, and verify dedicated active and passive filtering topologies (ARF, AEF, Pi, CM/DM) across multiple DC-DC converter topologies (Synchronous SEPIC, Synchronous ZETA, Buck, and Asynchronous Boost) to minimize output voltage ripple (Vp-p) and switching noise while characterizing efficiency penalties and loop stability trade-offs.
 
 Project Scope:
-* Custom Multi-Topology PCB: Designed and routed in KiCad, integrating synchronous SEPIC, synchronous ZETA, and asynchronous Boost configurations alongside dedicated modular filters.
+* Custom Multi-Topology PCB: Designed and routed in KiCad, integrating synchronous SEPIC, synchronous ZETA, Buck, and asynchronous Boost configurations alongside dedicated modular filters.
 * Filter Implementations: Active Ripple Filters (ARF), Active EMI Filters (AEF), Common-Mode/Differential-Mode (CMDM) networks, and passive multi-stage Pi filters.
 * Simulation vs. Hardware Discrepancies: Identification of ESL and ESR parasitic impacts not captured in standard ideal simulation models.
 * Comprehensive Laboratory Verification: Evaluation of Vp-p attenuation (tested up to 3 A and 4 A load currents), relative voltage drop, THD metrics, and overall electrical conversion efficiency.
@@ -16,40 +23,43 @@ Project Scope:
 
 ## System Architecture
 
-<img width="75%" alt="Hardware Mode Selection" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/Changemode.JPG" />
+<img width="75%" alt="Main Controller Schematic" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/LT8711_main.png" />
 
 The experimental platform is modular, structured into four core functional stages:
 
-1. Converter Core: Reconfigurable power conversion stage supporting Synchronous SEPIC, Synchronous ZETA, and Asynchronous Boost topologies driven by dedicated switching controllers.
-2. Filter Topology Matrix: Interchangeable filter boards tailored to targeted frequency bands and load ranges (ARF for low frequencies/high currents, AEF for high frequencies, passive Pi and CMDM).
-3. Active Cancellation Loop: Operational amplifier stages injecting anti-phase signals to cancel AC voltage ripples directly at the output node.
+1. Converter Core: Reconfigurable power conversion stage supporting Synchronous SEPIC, Synchronous ZETA, Buck, and Asynchronous Boost topologies driven by dedicated switching controllers (LT8711).
+2. Filter Topology Matrix: Interchangeable filter boards tailored to targeted frequency bands and load ranges (ARF for low frequencies/high currents, AEF for high frequencies, passive Pi, and CMDM).
+3. Active Cancellation Loop: Operational amplifier stages injecting anti-phase signals to cancel AC voltage ripples directly at the power node.
 4. Output Distribution & Sensing: Dedicated Kelvin measurement points designed for low-inductance ground-spring probe acquisition under dynamic load.
 
 ---
 
-## Hardware Implementations
+## Hardware Details & Schematics
 
-### Power Conversion Stage
-<img width="49%" alt="Main DC-DC Controller IC" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/MainIC_DC_DC.JPG" />
-<img width="49%" alt="Power Switching MOSFETs" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/KEY_MOSFETS.JPG" />
+### Input Conditioning & Filtering
+<img width="49%" alt="Input Common Mode / Differential Mode Filter" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/IN_CM_DM.png" />
+<img width="49%" alt="Input Active EMI Filter" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/IN_AEF.png" />
 
-Key hardware layout observations derived from experimental testing:
-* PCB Routing Sensitivity: Strict enforcement of minimal current loops for switching nodes is mandatory. Experimental data confirmed that routing discrepancies (e.g. extending return paths or placing the controller IC several millimeters away from inductors) introduce severe instability and collapse output regulation.
-* Switch Selection: Low Rdson power MOSFETs combined with high-current inductors were used to isolate semiconductor conduction losses from filtering overhead.
+* Input Protection & Interconnection: Input terminals are equipped with transient protection networks and structured input filter connection headers.
+* Input CMDM: Combined Common-Mode and Differential-Mode passive filter attenuating high-frequency conducted noise back to the primary supply.
+* Input AEF: High-speed active filter stage suppressing higher-frequency switching transients before propagation into power leads.
 
-### Active & Passive Filter Modules
+### Output Stage & Active Ripple Suppression
+<img width="49%" alt="Output Active Ripple Filter" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/OUT_ARF.png" />
+<img width="49%" alt="Output Pi Filter" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/OUT_PI.png" />
+
+* Output ARF: Active Ripple Filter optimized for lower frequency ripple cancellation under higher current loads (3 A to 4 A).
+* Output Passive Filtering: Multi-stage LC and Pi filter options used to evaluate parasitic resonances against active loop performance.
+* Filter Interconnection: Dedicated routing matrices allow testing converters with completely bypassed, purely passive, or actively assisted output filtering.
+
+### Layout Sensitivity & PCB Parasitics
 <p align="center">
-  <img width="49%" alt="ARF 3D Render" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/3D_ARF.JPG" />
-  <img width="49%" alt="AEF 3D Render" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/3D_AEF.JPG" />
-</p>
-<p align="center">
-  <img width="49%" alt="Passive Pi Filter 3D" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/3D_PI.JPG" />
-  <img width="49%" alt="CMDM Filter 3D" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/Photos8k/3D_CMDM.JPG" />
+  <img width="49%" alt="Input Connection Architecture" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/Filtry_sposob_polaczenia_wej.png" />
+  <img width="49%" alt="Output Connection Architecture" src="https://raw.githubusercontent.com/Sidowsky-MM/DC-DC-converters-with-ActiveFiltering-trying-to-reduce-noise-and-ripples/main/PCB/Schematic_MAIN/Filtry_sposob_polaczenia_wyjsciowe.png" />
 </p>
 
-* Active Ripple Filters (ARF): Optimized for lower frequency ripple suppression under elevated load conditions (3 A to 4 A).
-* Active EMI Filters (AEF): Configured with fast op-amps for high-frequency switching transient attenuation.
-* CMDM and Pi Filters: Evaluated as passive baselines to assess high-frequency parasitic resonances versus active cancellation.
+* Critical Switching Loops: Minimal loop areas for high di/dt paths are strictly enforced. Laboratory testing confirmed that small deviations, such as an extended return path or placing the controller IC several millimeters away from power inductors, lead to complete converter instability and loss of nominal output regulation.
+* Parasitic ESL and ESR: Discrete component parasitics strongly alter loop response compared to ideal models, mandating empirical verification for ripple and transient behavior.
 
 ---
 
